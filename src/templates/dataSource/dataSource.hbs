@@ -1,0 +1,47 @@
+package {{snake packageName}}
+
+import (
+	"context"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	{{#unless skeletonStructure}}
+	"fmt"
+	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
+		
+	gcloud "terraform-provider-genesyscloud/genesyscloud"
+	{{/unless}}
+)
+/*
+   The data_source_genesyscloud_{{snake packageName}}.go contains the data source implementation
+   for the resource.
+*/
+
+// dataSource{{pascal packageName}}Read retrieves by name the id in question
+func dataSource{{pascal packageName}}Read(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	{{#unless skeletonStructure}}
+	sdkConfig := meta.(*gcloud.ProviderMeta).ClientConfig
+	proxy := new{{pascal packageName}}Proxy(sdkConfig)
+
+	name := d.Get("name").(string)
+
+	return gcloud.WithRetries(ctx, 15*time.Second, func() *retry.RetryError {
+		{{name}}Id, retryable, err := proxy.get{{pascal packageName}}IdByName(ctx, name)
+
+		if err != nil && !retryable {
+			return retry.NonRetryableError(fmt.Errorf("Error searching {{english packageName}} %s: %s", name, err))
+		}
+
+		if retryable {
+			return retry.RetryableError(fmt.Errorf("No {{english packageName}} found with name %s", name))
+		}
+
+		d.SetId({{name}}Id)
+		return nil
+	})
+	{{/unless}}
+	{{#if skeletonStructure}}
+	return nil
+	{{/if}}
+}
