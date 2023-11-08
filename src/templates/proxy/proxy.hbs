@@ -202,16 +202,14 @@ func get{{pascal packageName}}Proxy(clientConfig *platformclientv2.Configuration
 			return "", true, fmt.Errorf("No {{english packageName}} found with name %s", name)
 		}
 
-		var {{name}} platformclientv2.{{sdk name}}
-		for _, {{name}}Sdk := range *{{name}}s.Entities {
+		for _, {{name}} := range *{{name}}s.Entities {
 			if *{{name}}.Name == name {
-				log.Printf("Retrieved the {{english packageName}} id %s by name %s", *{{name}}Sdk.Id, name)
-				{{name}} = {{name}}Sdk
+				log.Printf("Retrieved the {{english packageName}} id %s by name %s", *{{name}}.Id, name)
 				return *{{name}}.Id, false, nil
 			}
 		}
 
-		return "", false, fmt.Errorf("Unable to find {{english packageName}} with name %s", name)
+		return "", true, fmt.Errorf("Unable to find {{english packageName}} with name %s", name)
 		{{else}}
 		return "", false, nil
 		{{/unless}}
