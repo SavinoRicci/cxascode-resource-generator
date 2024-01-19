@@ -120,7 +120,7 @@ skeleton: true
 
 This will created all files and functions needed for the resource but containing no programmatic logic. Alternatively you can leave the operations property out of the config file. This method is not recommended as it will result in a very minimal proxy file and functions being created that may not be needed.
 
-If you wish to only generate certain skeleton files add any of the following to your config.
+If you wish to only generate certain skeleton files add any of the following to your config:
 
 ```yaml
 skeletonSchemaFile: true
@@ -134,6 +134,14 @@ All other files will be created as normal unless explicitly excluded. It is also
 ### Utils file
 
 The utils file is used an extension of the resource file and contains helper functions used when performing CRUD operation on a resource.If the resource you are generating does not contain any nested resources, a utils file is not created.  If no utils file is generated the content of the utils file will be added to the resource file. If you add `noResourceFile` or `skeletonResourceFile` to your config, no utils file will be generated.
+
+### Setting Go SDK Version
+
+In some situation the version of the platformclientv2 go sdk version may be wrong, in these situations or in situations where you want to use a different version you can set the version by adding the following to your config file:
+
+```yaml
+goSDKVersion: 115
+```
 
 ### Test files
 

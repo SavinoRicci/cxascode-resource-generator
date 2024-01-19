@@ -4,8 +4,6 @@ import handlebars from "../utils/handlerbarsSetup";
 import { Generator } from "./Generator";
 import templates from "../utils/templates";
 
-const goVersion: string = "v115";
-
 export class TemplateGenerator extends Generator {
   constructor() {
     super();
@@ -45,6 +43,11 @@ export class TemplateGenerator extends Generator {
 
     // Compile the template
     const template = handlebars.compile(templateText);
+
+    let goVersion: string = "v119";
+    if (Generator.config.goSDKVersion){
+      goVersion = `v${Generator.config.goSDKVersion.toString()}`
+    }
 
     const newData = {
       ...data,

@@ -63,7 +63,6 @@ function downloadFile(url: string): string {
   var i = 0;
   while (i < 10) {
     i++;
-    console.log(`Downloading file: ${url}`);
     // Source: https://www.npmjs.com/package/download-file-sync
     var file = childProcess.execFileSync("curl", ["--silent", "-L", url], {
       encoding: "utf8",

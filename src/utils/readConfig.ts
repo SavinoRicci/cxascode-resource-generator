@@ -48,6 +48,7 @@ function validateConfig(data: any) {
     "noProxyFile",
     "noDataSourceFile",
     "noUtilsFile",
+    "goSDKVersion"
   ]);
 
   // Check if all required properties are present

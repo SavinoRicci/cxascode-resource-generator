@@ -42,7 +42,7 @@ func getAllAuth{{pascal packageName}}s(ctx context.Context, clientConfig *platfo
 	}
 
 	for _, {{name}} := range *{{name}}s {
-		resources[*{{name}}.Id] = &resourceExporter.ResourceMeta{Name: *{{name}}.Id}
+		resources[*{{name}}.Id] = &resourceExporter.ResourceMeta{Name: *{{name}}.Name}
 	}
 
 	return resources, nil

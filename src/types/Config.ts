@@ -16,6 +16,7 @@ export interface Config {
   noProxyFile?: boolean;
   noDataSourceFile?: boolean;
   noUtilsFile?: boolean;
+  goSDKVersion?: number;
 }
 
 export interface Operation {
