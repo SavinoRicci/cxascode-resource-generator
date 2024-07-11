@@ -44,7 +44,7 @@ export class TemplateGenerator extends Generator {
     // Compile the template
     const template = handlebars.compile(templateText);
 
-    let goVersion: string = "v119";
+    let goVersion: string = "v133";
     if (Generator.config.goSDKVersion){
       goVersion = `v${Generator.config.goSDKVersion.toString()}`
     }
