@@ -22,20 +22,20 @@ var internalProxy *{{packageName}}Proxy
 
 // Type definitions for each func on our proxy so we can easily mock them out later
 {{#if createMethod}}
-	type create{{pascal packageName}}Func func(ctx context.Context, p *{{packageName}}Proxy, {{name}} *platformclientv2.{{sdk name}}) (*platformclientv2.{{sdk name}}, error)
+	type create{{pascal packageName}}Func func(ctx context.Context, p *{{packageName}}Proxy, {{name}} *platformclientv2.{{sdk name}}) (*platformclientv2.{{sdk name}}, *platformclientv2.APIResponse, error)
 {{/if}}
 {{#if getAllMethod}}
-	type getAll{{pascal packageName}}Func func(ctx context.Context, p *{{packageName}}Proxy) (*[]platformclientv2.{{sdk name}}, error)
-	type get{{pascal packageName}}IdByNameFunc func(ctx context.Context, p *{{packageName}}Proxy, name string) (id string, retryable bool, err error)
+	type getAll{{pascal packageName}}Func func(ctx context.Context, p *{{packageName}}Proxy) (*[]platformclientv2.{{sdk name}}, *platformclientv2.APIResponse, error)
+	type get{{pascal packageName}}IdByNameFunc func(ctx context.Context, p *{{packageName}}Proxy, name string) (string, *platformclientv2.APIResponse, bool, error)
 {{/if}}
 {{#if readMethod}}
-	type get{{pascal packageName}}ByIdFunc func(ctx context.Context, p *{{packageName}}Proxy, id string) ({{name}} *platformclientv2.{{sdk name}}, responseCode int, err error)
+	type get{{pascal packageName}}ByIdFunc func(ctx context.Context, p *{{packageName}}Proxy, id string) (*platformclientv2.{{sdk name}}, *platformclientv2.APIResponse, error)
 {{/if}}
 {{#if updateMethod}}
-	type update{{pascal packageName}}Func func(ctx context.Context, p *{{packageName}}Proxy, id string, {{name}} *platformclientv2.{{sdk name}}) (*platformclientv2.{{sdk name}}, error)
+	type update{{pascal packageName}}Func func(ctx context.Context, p *{{packageName}}Proxy, id string, {{name}} *platformclientv2.{{sdk name}}) (*platformclientv2.{{sdk name}}, *platformclientv2.APIResponse, error)
 {{/if}}
 {{#if deleteMethod}}
-	type delete{{pascal packageName}}Func func(ctx context.Context, p *{{packageName}}Proxy, id string) (responseCode int, err error)
+	type delete{{pascal packageName}}Func func(ctx context.Context, p *{{packageName}}Proxy, id string) (*platformclientv2.APIResponse, error)
 {{/if}}
 
 // {{packageName}}Proxy contains all of the methods that call genesys cloud APIs.
@@ -103,67 +103,62 @@ func get{{pascal packageName}}Proxy(clientConfig *platformclientv2.Configuration
 
 {{#if createMethod}}
 	// create{{pascal packageName}} creates a Genesys Cloud {{english packageName}}
-	func (p *{{packageName}}Proxy) create{{pascal packageName}}(ctx context.Context, {{packageName}} *platformclientv2.{{sdk name}}) (*platformclientv2.{{sdk name}}, error) {
+	func (p *{{packageName}}Proxy) create{{pascal packageName}}(ctx context.Context, {{packageName}} *platformclientv2.{{sdk name}}) (*platformclientv2.{{sdk name}}, *platformclientv2.APIResponse, error) {
 		return p.create{{pascal packageName}}Attr(ctx, p, {{packageName}})
 	}
 {{/if}}
 {{#if getAllMethod}}
 	// get{{pascal packageName}} retrieves all Genesys Cloud {{english packageName}}
-	func (p *{{packageName}}Proxy) getAll{{pascal packageName}}(ctx context.Context) (*[]platformclientv2.{{sdk name}}, error) {
+	func (p *{{packageName}}Proxy) getAll{{pascal packageName}}(ctx context.Context) (*[]platformclientv2.{{sdk name}}, *platformclientv2.APIResponse, error) {
 		return p.getAll{{pascal packageName}}Attr(ctx, p)
 	}
 
 	// get{{pascal packageName}}IdByName returns a single Genesys Cloud {{english packageName}} by a name
-	func (p *{{packageName}}Proxy) get{{pascal packageName}}IdByName(ctx context.Context, name string) (id string, retryable bool, err error) {
+	func (p *{{packageName}}Proxy) get{{pascal packageName}}IdByName(ctx context.Context, name string) (string, *platformclientv2.APIResponse, bool, error) {
 		return p.get{{pascal packageName}}IdByNameAttr(ctx, p, name)
 	}
 {{/if}}
 {{#if readMethod}}
 	// get{{pascal packageName}}ById returns a single Genesys Cloud {{english packageName}} by Id
-	func (p *{{packageName}}Proxy) get{{pascal packageName}}ById(ctx context.Context, id string) ({{packageName}} *platformclientv2.{{sdk name}}, statusCode int, err error) {
+	func (p *{{packageName}}Proxy) get{{pascal packageName}}ById(ctx context.Context, id string) (*platformclientv2.{{sdk name}}, *platformclientv2.APIResponse, error) {
 		return p.get{{pascal packageName}}ByIdAttr(ctx, p, id)
 	}
 {{/if}}
 {{#if updateMethod}}
 	// update{{pascal packageName}} updates a Genesys Cloud {{english packageName}}
-	func (p *{{packageName}}Proxy) update{{pascal packageName}}(ctx context.Context, id string, {{packageName}} *platformclientv2.{{sdk name}}) (*platformclientv2.{{sdk name}}, error) {
+	func (p *{{packageName}}Proxy) update{{pascal packageName}}(ctx context.Context, id string, {{packageName}} *platformclientv2.{{sdk name}}) (*platformclientv2.{{sdk name}}, *platformclientv2.APIResponse, error) {
 		return p.update{{pascal packageName}}Attr(ctx, p, id, {{packageName}})
 	}
 {{/if}}
 {{#if deleteMethod}}
 	// delete{{pascal packageName}} deletes a Genesys Cloud {{english packageName}} by Id
-	func (p *{{packageName}}Proxy) delete{{pascal packageName}}(ctx context.Context, id string) (statusCode int, err error) {
+	func (p *{{packageName}}Proxy) delete{{pascal packageName}}(ctx context.Context, id string) (*platformclientv2.APIResponse, error) {
 		return p.delete{{pascal packageName}}Attr(ctx, p, id)
 	}
 {{/if}}
 {{#if createMethod}}
 	// create{{pascal packageName}}Fn is an implementation function for creating a Genesys Cloud {{english packageName}}
-	func create{{pascal packageName}}Fn(ctx context.Context, p *{{packageName}}Proxy, {{packageName}} *platformclientv2.{{sdk name}}) (*platformclientv2.{{sdk name}}, error) {
+	func create{{pascal packageName}}Fn(ctx context.Context, p *{{packageName}}Proxy, {{packageName}} *platformclientv2.{{sdk name}}) (*platformclientv2.{{sdk name}},*platformclientv2.APIResponse, error) {
 		{{#unless skeletonStructure}}
-		{{name}}, _, err := p.{{apiCamel}}.{{createMethod}}(*{{packageName}})
-		if err != nil {
-			return nil, fmt.Errorf("Failed to create {{english packageName}}: %s", err)
-		}
-
-		return {{name}}, nil
+		return p.{{apiCamel}}.{{createMethod}}(*{{packageName}})
 		{{else}}
-		return nil, nil
+		return nil, nil, nil
 		{{/unless}}
 	}
 {{/if}}
 {{#if getAllMethod}}
 	// getAll{{pascal packageName}}Fn is the implementation for retrieving all {{english packageName}} in Genesys Cloud
-	func getAll{{pascal packageName}}Fn(ctx context.Context, p *{{packageName}}Proxy) (*[]platformclientv2.{{sdk name}}, error) {
+	func getAll{{pascal packageName}}Fn(ctx context.Context, p *{{packageName}}Proxy) (*[]platformclientv2.{{sdk name}}, *platformclientv2.APIResponse, error) {
 		{{#unless skeletonStructure}}
 		var all{{pascal name}}s []platformclientv2.{{sdk name}}
 		const pageSize = 100
 		
-		{{name}}s, _, err := p.{{apiCamel}}.{{getAllMethod}}()
+		{{name}}s, resp, err := p.{{apiCamel}}.{{getAllMethod}}()
 		if err != nil {
-			return nil, fmt.Errorf("Failed to get {{english name}}: %v", err)	
+			return nil, resp, err
 		}
 		if {{name}}s.Entities == nil || len(*{{name}}s.Entities) == 0 {
-			return &all{{pascal name}}s, nil
+			return &all{{pascal name}}s, resp, nil
 		}
 		for _, {{name}} := range *{{name}}s.Entities {
 			all{{pascal name}}s = append(all{{pascal name}}s, {{name}})
@@ -172,7 +167,7 @@ func get{{pascal packageName}}Proxy(clientConfig *platformclientv2.Configuration
 		for pageNum := 2; pageNum <= *{{name}}s.PageCount ; pageNum++ {
 			{{name}}s, _, err := p.{{apiCamel}}.{{getAllMethod}}()
 			if err != nil {
-				return nil, fmt.Errorf("Failed to get {{english name}}: %v", err)
+				return nil, resp, err
 			}
 
 			if {{name}}s.Entities == nil || len(*{{name}}s.Entities) == 0 {
@@ -184,78 +179,64 @@ func get{{pascal packageName}}Proxy(clientConfig *platformclientv2.Configuration
 			}
 		}
 
-		return &all{{pascal name}}s, nil
+		return &all{{pascal name}}s, resp, nil
 		{{else}}
-		return nil, nil
+		return nil, nil, nil
 		{{/unless}}
 	}
 
 	// get{{pascal packageName}}IdByNameFn is an implementation of the function to get a Genesys Cloud {{english packageName}} by name
-	func get{{pascal packageName}}IdByNameFn(ctx context.Context, p *{{packageName}}Proxy, name string) (id string, retryable bool, err error) {
+	func get{{pascal packageName}}IdByNameFn(ctx context.Context, p *{{packageName}}Proxy, name string) (string, *platformclientv2.APIResponse, bool, error) {
 		{{#unless skeletonStructure}}
-		{{name}}s, _,err := p.{{apiCamel}}.{{getAllMethod}}()
+		{{name}}s, resp, err := p.{{apiCamel}}.{{getAllMethod}}()
 		if err != nil {
-			return "", false, err
+			return "", resp, false, err
 		}
 
 		if {{name}}s.Entities == nil || len(*{{name}}s.Entities) == 0 {
-			return "", true, fmt.Errorf("No {{english packageName}} found with name %s", name)
+			return "", resp, true, err 
 		}
 
 		for _, {{name}} := range *{{name}}s.Entities {
 			if *{{name}}.Name == name {
-				log.Printf("Retrieved the {{english packageName}} id %s by name %s", *{{name}}.Id, name)
-				return *{{name}}.Id, false, nil
+                log.Printf("Retrieved the {{english packageName}} id %s by name %s", *{{name}}.Id, name)
+				return *{{name}}.Id, resp, false, nil
 			}
 		}
 
-		return "", true, fmt.Errorf("Unable to find {{english packageName}} with name %s", name)
+		return "", resp, true, fmt.Errorf("Unable to find {{english packageName}} with name %s", name)
 		{{else}}
-		return "", false, nil
+		return "", nil, false, nil
 		{{/unless}}
 	}
 {{/if}}
 {{#if readMethod}}
 	// get{{pascal packageName}}ByIdFn is an implementation of the function to get a Genesys Cloud {{english packageName}} by Id
-	func get{{pascal packageName}}ByIdFn(ctx context.Context, p *{{packageName}}Proxy, id string) ({{packageName}} *platformclientv2.{{sdk name}}, statusCode int, err error) {
+	func get{{pascal packageName}}ByIdFn(ctx context.Context, p *{{packageName}}Proxy, id string) (*platformclientv2.{{sdk name}}, *platformclientv2.APIResponse, error) {
 		{{#unless skeletonStructure}}
-		{{name}}, resp, err := p.{{apiCamel}}.{{readMethod}}(id)
-		if err != nil {
-			return nil, resp.StatusCode, fmt.Errorf("Failed to retrieve {{english packageName}} by id %s: %s", id, err)
-		}
-
-		return {{name}}, resp.StatusCode, nil
+		return p.{{apiCamel}}.{{readMethod}}(id)
 		{{else}}
-		return nil, 0, nil
+		return nil, nil, nil
 		{{/unless}}
 	}
 {{/if}}
 {{#if updateMethod}}
 	// update{{pascal packageName}}Fn is an implementation of the function to update a Genesys Cloud {{english packageName}}
-	func update{{pascal packageName}}Fn(ctx context.Context, p *{{packageName}}Proxy, id string, {{packageName}} *platformclientv2.{{sdk name}}) (*platformclientv2.{{sdk name}}, error) {
+	func update{{pascal packageName}}Fn(ctx context.Context, p *{{packageName}}Proxy, id string, {{packageName}} *platformclientv2.{{sdk name}}) (*platformclientv2.{{sdk name}}, *platformclientv2.APIResponse, error) {
 		{{#unless skeletonStructure}}
-		{{name}}, _, err := p.{{apiCamel}}.{{updateMethod}}(id, *{{name}})
-		if err != nil {
-			return nil, fmt.Errorf("Failed to update {{english packageName}}: %s", err)
-		}
-		return {{name}}, nil
+		return p.{{apiCamel}}.{{updateMethod}}(id, *{{packageName}})
 		{{else}}
-		return nil, nil
+		return nil, nil, nil
 		{{/unless}}
 	}
 {{/if}}
 {{#if deleteMethod}}
 	// delete{{pascal packageName}}Fn is an implementation function for deleting a Genesys Cloud {{english packageName}}
-	func delete{{pascal packageName}}Fn(ctx context.Context, p *{{packageName}}Proxy, id string) (statusCode int, err error) {
+	func delete{{pascal packageName}}Fn(ctx context.Context, p *{{packageName}}Proxy, id string) (*platformclientv2.APIResponse, error) {
 		{{#unless skeletonStructure}}
-		resp, err := p.{{apiCamel}}.{{deleteMethod}}(id)
-		if err != nil {
-			return resp.StatusCode, fmt.Errorf("Failed to delete {{english packageName}}: %s", err)
-		}
-
-		return resp.StatusCode, nil
+		return p.{{apiCamel}}.{{deleteMethod}}(id)
 		{{else}}
-		return 0, nil
+		return nil, nil
 		{{/unless}}
 	}
 {{/if}}

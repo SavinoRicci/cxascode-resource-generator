@@ -15,8 +15,9 @@ import (
 	
 	"terraform-provider-genesyscloud/genesyscloud/consistency_checker"
 
-	gcloud "terraform-provider-genesyscloud/genesyscloud"
-
+	"terraform-provider-genesyscloud/genesyscloud/provider"
+	"terraform-provider-genesyscloud/genesyscloud/util"
+	"terraform-provider-genesyscloud/genesyscloud/util/constants"
 	"terraform-provider-genesyscloud/genesyscloud/util/resourcedata"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
@@ -36,9 +37,9 @@ func getAllAuth{{pascal packageName}}s(ctx context.Context, clientConfig *platfo
 	proxy := new{{pascal packageName}}Proxy(clientConfig)
 	resources := make(resourceExporter.ResourceIDMetaMap)
 
-	{{name}}s, err := proxy.getAll{{pascal packageName}}(ctx)
+	{{name}}s, resp, err := proxy.getAll{{pascal packageName}}(ctx)
 	if err != nil {
-		return nil, diag.Errorf("Failed to get {{english packageName}}: %v", err)
+		return nil, util.BuildAPIDiagnosticError(resourceName, fmt.Sprintf("Failed to get {{english packageName}}: %v", err), resp)
 	}
 
 	for _, {{name}} := range *{{name}}s {
@@ -58,15 +59,15 @@ func create{{pascal packageName}}(ctx context.Context, d *schema.ResourceData, m
 	{{#if skeletonStructure}}
 	return nil
 	{{else}}
-	sdkConfig := meta.(*gcloud.ProviderMeta).ClientConfig
+	sdkConfig := meta.(*provider.ProviderMeta).ClientConfig
 	proxy := get{{pascal packageName}}Proxy(sdkConfig)
 	
 	{{packageName}} := get{{pascal packageName}}FromResourceData(d)
 
 	log.Printf("Creating {{english packageName}} %s", *{{packageName}}.Name)
-	{{name}}, err := proxy.create{{pascal packageName}}(ctx, &{{packageName}})
+	{{name}}, resp, err := proxy.create{{pascal packageName}}(ctx, &{{packageName}})
 	if err != nil {
-		return diag.Errorf("Failed to create {{english packageName}}: %s", err)
+		return util.BuildAPIDiagnosticError(resourceName, fmt.Sprintf("Failed to create {{english packageName}}: %s", err), resp)
 	}
 
 	d.SetId(*{{name}}.Id)
@@ -84,21 +85,20 @@ func read{{pascal packageName}}(ctx context.Context, d *schema.ResourceData, met
 	{{#if skeletonStructure}}
 	return nil
 	{{else}}
-	sdkConfig := meta.(*gcloud.ProviderMeta).ClientConfig
+	sdkConfig := meta.(*provider.ProviderMeta).ClientConfig
 	proxy := get{{pascal packageName}}Proxy(sdkConfig)
+	cc := consistency_checker.NewConsistencyCheck(ctx, d, meta, Resource{{pascal packageName}}(), constants.DefaultConsistencyChecks, resourceName)
 
 	log.Printf("Reading {{english packageName}} %s", d.Id())
 
-	return gcloud.WithRetriesForRead(ctx, d, func() *retry.RetryError {
-		{{name}}, respCode, getErr := proxy.get{{pascal packageName}}ById(ctx, d.Id())
+	return util.WithRetriesForRead(ctx, d, func() *retry.RetryError {
+		{{name}}, resp, getErr := proxy.get{{pascal packageName}}ById(ctx, d.Id())
 		if getErr != nil {
-			if gcloud.IsStatus404ByInt(respCode) {
-				return retry.RetryableError(fmt.Errorf("Failed to read {{english packageName}} %s: %s", d.Id(), getErr))
+			if util.IsStatus404(resp) {
+				return retry.RetryableError(util.BuildWithRetriesApiDiagnosticError(resourceName, fmt.Sprintf("Failed to read {{english packageName}} %s: %s", d.Id(), getErr), resp))
 			}
-			return retry.NonRetryableError(fmt.Errorf("Failed to read {{english packageName}} %s: %s", d.Id(), getErr))
+			return retry.NonRetryableError(util.BuildWithRetriesApiDiagnosticError(resourceName, fmt.Sprintf("Failed to read {{english packageName}} %s: %s", d.Id(), getErr), resp))
 		}
-
-		cc := consistency_checker.NewConsistencyCheck(ctx, d, meta, Resource{{pascal packageName}}())
 
 		{{#each properties~}}{{#if flattenFunction~}}
 		resourcedata.SetNillableValueWithInterfaceArrayWithFunc(d, "{{snake name}}", {{../name}}.{{pascal name}}, {{flattenFunction}})
@@ -113,7 +113,7 @@ func read{{pascal packageName}}(ctx context.Context, d *schema.ResourceData, met
 		{{/if~}}{{/each}}
 
 		log.Printf("Read {{english packageName}} %s %s", d.Id(), *{{name}}.Name)
-		return cc.CheckState()
+		return cc.CheckState(d)
 	})
 	{{/if}}
 	{{/unless}}
@@ -127,15 +127,15 @@ func update{{pascal packageName}}(ctx context.Context, d *schema.ResourceData, m
 	{{#if skeletonStructure}}
 	return nil
 	{{else}}
-	sdkConfig := meta.(*gcloud.ProviderMeta).ClientConfig
+	sdkConfig := meta.(*provider.ProviderMeta).ClientConfig
 	proxy := get{{pascal packageName}}Proxy(sdkConfig)
 	
 	{{packageName}} := get{{pascal packageName}}FromResourceData(d)
 
 	log.Printf("Updating {{english packageName}} %s", *{{packageName}}.Name)
-	{{name}}, err := proxy.update{{pascal packageName}}(ctx, d.Id(), &{{packageName}})
+	{{name}}, resp, err := proxy.update{{pascal packageName}}(ctx, d.Id(), &{{packageName}})
 	if err != nil {
-		return diag.Errorf("Failed to update {{english packageName}}: %s", err)
+		return util.BuildAPIDiagnosticError(resourceName, fmt.Sprintf("Failed to update {{english packageName}} %s: %s", d.Id(), err), resp)
 	}
 
 	log.Printf("Updated {{english packageName}} %s", *{{name}}.Id)
@@ -152,26 +152,26 @@ func delete{{pascal packageName}}(ctx context.Context, d *schema.ResourceData, m
 	{{#if skeletonStructure}}
 	return nil
 	{{else}}
-	sdkConfig := meta.(*gcloud.ProviderMeta).ClientConfig
+	sdkConfig := meta.(*provider.ProviderMeta).ClientConfig
 	proxy := get{{pascal packageName}}Proxy(sdkConfig)
 	
-	_, err := proxy.delete{{pascal packageName}}(ctx, d.Id())
+	resp, err := proxy.delete{{pascal packageName}}(ctx, d.Id())
 	if err != nil {
-		return diag.Errorf("Failed to delete {{english packageName}} %s: %s", d.Id(), err)
+		return util.BuildAPIDiagnosticError(resourceName, fmt.Sprintf("Failed to delete {{english packageName}} %s: %s", d.Id(), err), resp)
 	}
 
-	return gcloud.WithRetries(ctx, 180*time.Second, func() *retry.RetryError {
-		_, respCode, err := proxy.get{{pascal packageName}}ById(ctx, d.Id())
+	return util.WithRetries(ctx, 180*time.Second, func() *retry.RetryError {
+		_, resp, err := proxy.get{{pascal packageName}}ById(ctx, d.Id())
 
 		if err != nil {
-			if gcloud.IsStatus404ByInt(respCode) {
+			if util.IsStatus404(resp) {
 				log.Printf("Deleted {{english packageName}} %s", d.Id())
 				return nil
 			}
-			return retry.NonRetryableError(fmt.Errorf("Error deleting {{english packageName}} %s: %s", d.Id(), err))
+			return retry.NonRetryableError(util.BuildWithRetriesApiDiagnosticError(resourceName, fmt.Sprintf("Error deleting {{english packageName}} %s: %s", d.Id(), err), resp))
 		}
 
-		return retry.RetryableError(fmt.Errorf("{{english packageName}} %s still exists", d.Id()))
+		return retry.RetryableError(util.BuildWithRetriesApiDiagnosticError(resourceName, fmt.Sprintf("{{english packageName}} %s still exists", d.Id()), resp))
 	})
 	{{/if}}
 	{{/unless}}
