@@ -1,0 +1,22 @@
+package: assistant
+mainObject: Assistant
+operations:
+  - type: create
+    method: POST
+    path: /api/v2/assistants
+    link: https://developer.genesys.cloud/devapps/api-explorer#post-api-v2-assistants
+  - type: read
+    method: GET
+    path: /api/v2/assistants/{assistantId}
+    link: https://developer.genesys.cloud/devapps/api-explorer#get-api-v2-assistants--assistantId-
+  - type: delete
+    method: DELETE
+    path: /api/v2/assistants/{assistantId}
+    link: https://developer.genesys.cloud/devapps/api-explorer#delete-api-v2-assistants--assistantId-
+  - type: getAll
+    method: GET
+    path: /api/v2/assistants
+    link: https://developer.genesys.cloud/devapps/api-explorer#get-api-v2-assistants
+skeleton: true
+testFiles: true
+initTest: true
