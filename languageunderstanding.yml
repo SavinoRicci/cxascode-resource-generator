@@ -1,0 +1,22 @@
+package: assistant
+mainObject: Assistant
+operations:
+  - type: create
+    method: POST
+    path: /api/v2/languageunderstanding/domains
+    link: https://developer.genesys.cloud/devapps/api-explorer#post-api-v2-languageunderstanding-domains
+  - type: read
+    method: GET
+    path: /api/v2/languageunderstanding/domains/{domainId}
+    link: https://developer.genesys.cloud/devapps/api-explorer#get-api-v2-languageunderstanding-domains-domainId-
+  - type: delete
+    method: DELETE
+    path: /api/v2/languageunderstanding/domains/{domainId}
+    link: https://developer.genesys.cloud/devapps/api-explorer#delete-api-v2-languageunderstanding-domains-domainId-
+  - type: getAll
+    method: GET
+    path: /api/v2/languageunderstanding/domains
+    link: https://developer.genesys.cloud/devapps/api-explorer#get-api-v2-languageunderstanding-domains
+skeleton: true
+testFiles: true
+initTest: true

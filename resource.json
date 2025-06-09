@@ -1,0 +1,713 @@
+{
+  "name": "assistant",
+  "packageName": "assistant",
+  "properties": [
+    {
+      "name": "name",
+      "type": "string",
+      "description": "The name of the assistant that will assist the agent.",
+      "required": true,
+      "isStringArray": false,
+      "isReference": false,
+      "tfSchemaData": {
+        "type": "schema.TypeString"
+      }
+    },
+    {
+      "name": "googleDialogflowConfig",
+      "type": "object",
+      "description": "(Deprecated: use the 'knowledgeSuggestionConfig' for genesys knowledge suggestions) Configuration of Dialogflow used to assist the agent with transcriptions and knowledge suggestions.",
+      "required": false,
+      "isStringArray": false,
+      "isReference": false,
+      "flattenFunction": "flattenGoogleDialogflowConfig",
+      "buildFunction": "buildGoogleDialogflowConfig",
+      "tfSchemaData": {
+        "type": "schema.TypeList",
+        "maxItems": 1,
+        "element": "googleDialogflowConfigResource"
+      },
+      "nestedObject": {
+        "name": "googleDialogflowConfig",
+        "properties": [
+          {
+            "name": "integrationId",
+            "type": "string",
+            "description": "The integration identifier with which the assistant will fetch transcriptions and knowledge suggestions.",
+            "required": false,
+            "isStringArray": false,
+            "isReference": false,
+            "tfSchemaData": {
+              "type": "schema.TypeString"
+            }
+          },
+          {
+            "name": "conversationProfiles",
+            "type": "array",
+            "description": "The conversation profiles for which the assistant will fetch transcription and knowledge suggestions.",
+            "required": true,
+            "isStringArray": false,
+            "isReference": false,
+            "flattenFunction": "flattenConversationProfiles",
+            "buildFunction": "buildConversationProfiles",
+            "tfSchemaData": {
+              "type": "schema.TypeList",
+              "element": "conversationProfileResource"
+            },
+            "nestedObject": {
+              "name": "conversationProfile",
+              "properties": [
+                {
+                  "name": "languageCode",
+                  "type": "string",
+                  "description": "The language code supported by the conversation profile belonging to a particular project for Dialogflow.",
+                  "required": true,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "tfSchemaData": {
+                    "type": "schema.TypeString"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "description": "The name of the conversation profile belonging to a particular project for Dialogflow",
+                  "required": true,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "tfSchemaData": {
+                    "type": "schema.TypeString"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "transcriptionConfig",
+      "type": "object",
+      "description": "Configuration for speech transcription used to assist the agent.",
+      "required": true,
+      "isStringArray": false,
+      "isReference": false,
+      "flattenFunction": "flattenTranscriptionConfig",
+      "buildFunction": "buildTranscriptionConfig",
+      "tfSchemaData": {
+        "type": "schema.TypeList",
+        "maxItems": 1,
+        "element": "transcriptionConfigResource"
+      },
+      "nestedObject": {
+        "name": "transcriptionConfig",
+        "properties": [
+          {
+            "name": "vendorName",
+            "type": "string",
+            "description": "The name of the vendor used for speech transcription.",
+            "required": true,
+            "isStringArray": false,
+            "isReference": false,
+            "tfSchemaData": {
+              "type": "schema.TypeString"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "knowledgeSuggestionConfig",
+      "type": "object",
+      "description": "Configuration that defines how to produce knowledge suggestions.",
+      "required": true,
+      "isStringArray": false,
+      "isReference": false,
+      "flattenFunction": "flattenKnowledgeSuggestionConfig",
+      "buildFunction": "buildKnowledgeSuggestionConfig",
+      "tfSchemaData": {
+        "type": "schema.TypeList",
+        "maxItems": 1,
+        "element": "knowledgeSuggestionConfigResource"
+      },
+      "nestedObject": {
+        "name": "knowledgeSuggestionConfig",
+        "properties": [
+          {
+            "name": "vendorName",
+            "type": "string",
+            "description": "The name of vendor used for knowledge suggestions.",
+            "required": true,
+            "isStringArray": false,
+            "isReference": false,
+            "tfSchemaData": {
+              "type": "schema.TypeString"
+            }
+          },
+          {
+            "name": "knowledgeBase",
+            "type": "object",
+            "description": "The ID of knowledge base to query when Genesys is the knowledge suggestions provider.",
+            "required": false,
+            "isStringArray": false,
+            "isReference": false,
+            "flattenFunction": "flattenKnowledgeBaseReference",
+            "buildFunction": "buildKnowledgeBaseReference",
+            "tfSchemaData": {
+              "type": "schema.TypeList",
+              "maxItems": 1,
+              "element": "knowledgeBaseReferenceResource"
+            },
+            "nestedObject": {
+              "name": "knowledgeBaseReference",
+              "properties": [
+                {
+                  "name": "languageCode",
+                  "type": "string",
+                  "description": "Language of the knowledge base",
+                  "required": false,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "tfSchemaData": {
+                    "type": "schema.TypeString"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "knowledgeBases",
+            "type": "array",
+            "description": "The knowledge bases to query based on dialect, when Genesys is the knowledge suggestions provider.",
+            "required": false,
+            "isStringArray": false,
+            "isReference": false,
+            "flattenFunction": "flattenKnowledgeBaseWithDialectReferences",
+            "buildFunction": "buildKnowledgeBaseWithDialectReferences",
+            "tfSchemaData": {
+              "type": "schema.TypeList",
+              "element": "knowledgeBaseWithDialectReferenceResource"
+            },
+            "nestedObject": {
+              "name": "knowledgeBaseWithDialectReference",
+              "properties": [
+                {
+                  "name": "languageCode",
+                  "type": "string",
+                  "description": "The dialect for the knowledge base.",
+                  "required": true,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "tfSchemaData": {
+                    "type": "schema.TypeString"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "state",
+      "type": "string",
+      "description": "State of the assistant.",
+      "required": false,
+      "isStringArray": false,
+      "isReference": false,
+      "tfSchemaData": {
+        "type": "schema.TypeString"
+      }
+    },
+    {
+      "name": "copilot",
+      "type": "object",
+      "description": "Agent copilot configuration.",
+      "required": false,
+      "isStringArray": false,
+      "isReference": false,
+      "flattenFunction": "flattenCopilot",
+      "buildFunction": "buildCopilot",
+      "tfSchemaData": {
+        "type": "schema.TypeList",
+        "maxItems": 1,
+        "element": "copilotResource"
+      },
+      "nestedObject": {
+        "name": "copilot",
+        "properties": [
+          {
+            "name": "enabled",
+            "type": "boolean",
+            "description": "Copilot is enabled.",
+            "required": false,
+            "isStringArray": false,
+            "isReference": false,
+            "tfSchemaData": {
+              "type": "schema.TypeBool"
+            }
+          },
+          {
+            "name": "liveOnQueue",
+            "type": "boolean",
+            "description": "Copilot is live on selected queue.",
+            "required": true,
+            "isStringArray": false,
+            "isReference": false,
+            "tfSchemaData": {
+              "type": "schema.TypeBool"
+            }
+          },
+          {
+            "name": "defaultLanguage",
+            "type": "string",
+            "description": "Copilot default language, e.g. [en-US, es-US, es-ES]. Once set, it can not be modified.",
+            "required": true,
+            "isStringArray": false,
+            "isReference": false,
+            "tfSchemaData": {
+              "type": "schema.TypeString"
+            }
+          },
+          {
+            "name": "knowledgeAnswerConfig",
+            "type": "object",
+            "description": "Knowledge answer configuration.",
+            "required": false,
+            "isStringArray": false,
+            "isReference": false,
+            "flattenFunction": "flattenKnowledgeAnswerConfig",
+            "buildFunction": "buildKnowledgeAnswerConfig",
+            "tfSchemaData": {
+              "type": "schema.TypeList",
+              "maxItems": 1,
+              "element": "knowledgeAnswerConfigResource"
+            },
+            "nestedObject": {
+              "name": "knowledgeAnswerConfig",
+              "properties": [
+                {
+                  "name": "enabled",
+                  "type": "boolean",
+                  "description": "Knowledge answer is enabled.",
+                  "required": true,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "tfSchemaData": {
+                    "type": "schema.TypeBool"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "summaryGenerationConfig",
+            "type": "object",
+            "description": "Copilot generated summary configuration.",
+            "required": false,
+            "isStringArray": false,
+            "isReference": false,
+            "flattenFunction": "flattenSummaryGenerationConfig",
+            "buildFunction": "buildSummaryGenerationConfig",
+            "tfSchemaData": {
+              "type": "schema.TypeList",
+              "maxItems": 1,
+              "element": "summaryGenerationConfigResource"
+            },
+            "nestedObject": {
+              "name": "summaryGenerationConfig",
+              "properties": [
+                {
+                  "name": "enabled",
+                  "type": "boolean",
+                  "description": "Copilot generated summary is enabled.",
+                  "required": true,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "tfSchemaData": {
+                    "type": "schema.TypeBool"
+                  }
+                },
+                {
+                  "name": "summarySetting",
+                  "type": "object",
+                  "description": "Configured summary setting object.",
+                  "required": false,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "flattenFunction": "flattenSummarySettingEntity",
+                  "buildFunction": "buildSummarySettingEntity",
+                  "tfSchemaData": {
+                    "type": "schema.TypeList",
+                    "maxItems": 1,
+                    "element": "summarySettingEntityResource"
+                  },
+                  "nestedObject": {
+                    "name": "summarySettingEntity",
+                    "properties": []
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "wrapupCodePredictionConfig",
+            "type": "object",
+            "description": "Copilot generated wrapup code prediction configuration.",
+            "required": false,
+            "isStringArray": false,
+            "isReference": false,
+            "flattenFunction": "flattenWrapupCodePredictionConfig",
+            "buildFunction": "buildWrapupCodePredictionConfig",
+            "tfSchemaData": {
+              "type": "schema.TypeList",
+              "maxItems": 1,
+              "element": "wrapupCodePredictionConfigResource"
+            },
+            "nestedObject": {
+              "name": "wrapupCodePredictionConfig",
+              "properties": [
+                {
+                  "name": "enabled",
+                  "type": "boolean",
+                  "description": "Copilot generated wrapup code prediction is enabled.",
+                  "required": true,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "tfSchemaData": {
+                    "type": "schema.TypeBool"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "answerGenerationConfig",
+            "type": "object",
+            "description": "Answer generation configuration.",
+            "required": false,
+            "isStringArray": false,
+            "isReference": false,
+            "flattenFunction": "flattenAnswerGenerationConfig",
+            "buildFunction": "buildAnswerGenerationConfig",
+            "tfSchemaData": {
+              "type": "schema.TypeList",
+              "maxItems": 1,
+              "element": "answerGenerationConfigResource"
+            },
+            "nestedObject": {
+              "name": "answerGenerationConfig",
+              "properties": [
+                {
+                  "name": "enabled",
+                  "type": "boolean",
+                  "description": "Answer generation is enabled.",
+                  "required": true,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "tfSchemaData": {
+                    "type": "schema.TypeBool"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "nluEngineType",
+            "type": "string",
+            "description": "Language understanding engine type.",
+            "required": false,
+            "isStringArray": false,
+            "isReference": false,
+            "tfSchemaData": {
+              "type": "schema.TypeString"
+            }
+          },
+          {
+            "name": "nluConfig",
+            "type": "object",
+            "description": "NLU configuration.",
+            "required": false,
+            "isStringArray": false,
+            "isReference": false,
+            "flattenFunction": "flattenNluConfig",
+            "buildFunction": "buildNluConfig",
+            "tfSchemaData": {
+              "type": "schema.TypeList",
+              "maxItems": 1,
+              "element": "nluConfigResource"
+            },
+            "nestedObject": {
+              "name": "nluConfig",
+              "properties": [
+                {
+                  "name": "domain",
+                  "type": "object",
+                  "description": "NLU domain.",
+                  "required": true,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "flattenFunction": "flattenCopilotNluDomain",
+                  "buildFunction": "buildCopilotNluDomain",
+                  "tfSchemaData": {
+                    "type": "schema.TypeList",
+                    "maxItems": 1,
+                    "element": "copilotNluDomainResource"
+                  },
+                  "nestedObject": {
+                    "name": "copilotNluDomain",
+                    "properties": [
+                      {
+                        "name": "useLatestVersion",
+                        "type": "boolean",
+                        "description": "Use the latest version of the NLU domain. If false, version is required.",
+                        "required": true,
+                        "isStringArray": false,
+                        "isReference": false,
+                        "tfSchemaData": {
+                          "type": "schema.TypeBool"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "intentConfidenceThreshold",
+                  "type": "number",
+                  "description": "Minimum confidence value of accepting NLU intents, must be greater than 0 and less than 1.",
+                  "required": true,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "tfSchemaData": {
+                    "type": "schema.TypeFloat"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "ruleEngineConfig",
+            "type": "object",
+            "description": "Rule engine configuration.",
+            "required": false,
+            "isStringArray": false,
+            "isReference": false,
+            "flattenFunction": "flattenRuleEngineConfig",
+            "buildFunction": "buildRuleEngineConfig",
+            "tfSchemaData": {
+              "type": "schema.TypeList",
+              "maxItems": 1,
+              "element": "ruleEngineConfigResource"
+            },
+            "nestedObject": {
+              "name": "ruleEngineConfig",
+              "properties": [
+                {
+                  "name": "rules",
+                  "type": "array",
+                  "description": "List of rules to evaluate by the engine.",
+                  "required": true,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "flattenFunction": "flattenRuleConfigs",
+                  "buildFunction": "buildRuleConfigs",
+                  "tfSchemaData": {
+                    "type": "schema.TypeList",
+                    "element": "ruleConfigResource"
+                  },
+                  "nestedObject": {
+                    "name": "ruleConfig",
+                    "properties": [
+                      {
+                        "name": "enabled",
+                        "type": "boolean",
+                        "description": "Rule enabled.",
+                        "required": true,
+                        "isStringArray": false,
+                        "isReference": false,
+                        "tfSchemaData": {
+                          "type": "schema.TypeBool"
+                        }
+                      },
+                      {
+                        "name": "rule",
+                        "type": "object",
+                        "description": "Rule configuration.",
+                        "required": true,
+                        "isStringArray": false,
+                        "isReference": false,
+                        "flattenFunction": "flattenCopilotRule",
+                        "buildFunction": "buildCopilotRule",
+                        "tfSchemaData": {
+                          "type": "schema.TypeList",
+                          "maxItems": 1,
+                          "element": "copilotRuleResource"
+                        },
+                        "nestedObject": {
+                          "name": "copilotRule",
+                          "properties": [
+                            {
+                              "name": "conditions",
+                              "type": "array",
+                              "description": "List of conditions to execute actions, must have at least 1 element and maximum 100 elements. Operator in case of multiple conditions: 'OR'.",
+                              "required": true,
+                              "isStringArray": false,
+                              "isReference": false,
+                              "flattenFunction": "flattenCopilotConditions",
+                              "buildFunction": "buildCopilotConditions",
+                              "tfSchemaData": {
+                                "type": "schema.TypeList",
+                                "element": "copilotConditionResource"
+                              },
+                              "nestedObject": {
+                                "name": "copilotCondition",
+                                "properties": [
+                                  {
+                                    "name": "conditionType",
+                                    "type": "string",
+                                    "description": "Type of condition.",
+                                    "required": true,
+                                    "isStringArray": false,
+                                    "isReference": false,
+                                    "tfSchemaData": {
+                                      "type": "schema.TypeString"
+                                    }
+                                  },
+                                  {
+                                    "name": "conditionValues",
+                                    "type": "array",
+                                    "description": "Condition values.",
+                                    "required": true,
+                                    "isStringArray": true,
+                                    "isReference": false,
+                                    "tfSchemaData": {
+                                      "type": "schema.TypeList",
+                                      "element": "&schema.Schema{Type: schema.TypeString}"
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "name": "actions",
+                              "type": "array",
+                              "description": "List of actions to execute, must have at least 1 element and maximum 100 elements.",
+                              "required": true,
+                              "isStringArray": false,
+                              "isReference": false,
+                              "flattenFunction": "flattenCopilotActions",
+                              "buildFunction": "buildCopilotActions",
+                              "tfSchemaData": {
+                                "type": "schema.TypeList",
+                                "element": "copilotActionResource"
+                              },
+                              "nestedObject": {
+                                "name": "copilotAction",
+                                "properties": [
+                                  {
+                                    "name": "actionType",
+                                    "type": "string",
+                                    "description": "Type of action.",
+                                    "required": true,
+                                    "isStringArray": false,
+                                    "isReference": false,
+                                    "tfSchemaData": {
+                                      "type": "schema.TypeString"
+                                    }
+                                  },
+                                  {
+                                    "name": "attributes",
+                                    "type": "unknown",
+                                    "description": "Action specific attributes, if any. Maximum 100 of string key-value pair allowed.",
+                                    "required": false,
+                                    "isStringArray": false,
+                                    "isReference": false,
+                                    "tfSchemaData": {}
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "fallback",
+                  "type": "object",
+                  "description": "Fallback configuration.",
+                  "required": false,
+                  "isStringArray": false,
+                  "isReference": false,
+                  "flattenFunction": "flattenFallback",
+                  "buildFunction": "buildFallback",
+                  "tfSchemaData": {
+                    "type": "schema.TypeList",
+                    "maxItems": 1,
+                    "element": "fallbackResource"
+                  },
+                  "nestedObject": {
+                    "name": "fallback",
+                    "properties": [
+                      {
+                        "name": "enabled",
+                        "type": "boolean",
+                        "description": "Fallback actions are enabled.",
+                        "required": false,
+                        "isStringArray": false,
+                        "isReference": false,
+                        "tfSchemaData": {
+                          "type": "schema.TypeBool"
+                        }
+                      },
+                      {
+                        "name": "actions",
+                        "type": "array",
+                        "description": "Fallback actions.",
+                        "required": false,
+                        "isStringArray": false,
+                        "isReference": false,
+                        "flattenFunction": "flattenCopilotFallbackActions",
+                        "buildFunction": "buildCopilotFallbackActions",
+                        "tfSchemaData": {
+                          "type": "schema.TypeList",
+                          "element": "copilotFallbackActionResource"
+                        },
+                        "nestedObject": {
+                          "name": "copilotFallbackAction",
+                          "properties": [
+                            {
+                              "name": "actionType",
+                              "type": "string",
+                              "description": "Type of action.",
+                              "required": true,
+                              "isStringArray": false,
+                              "isReference": false,
+                              "tfSchemaData": {
+                                "type": "schema.TypeString"
+                              }
+                            },
+                            {
+                              "name": "attributes",
+                              "type": "unknown",
+                              "description": "Action specific attributes, if any. Maximum 100 of string key-value pair allowed.",
+                              "required": false,
+                              "isStringArray": false,
+                              "isReference": false,
+                              "tfSchemaData": {}
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
